@@ -7,7 +7,22 @@ import configs
 import particles
 import ring
 import SoundMaker
-from missions import MissionManager
+from missions_controller import MissionManager
+
+# --- SIMPLE SCROLLING GRID BACKGROUND ---
+def draw_moving_grid(surface, time_sec, cell_size=40, speed=25.0):
+    grid_color = (18, 22, 32)  # Subtle dark grid line color
+    # Offset moves towards top-left (0, 0)
+    offset = (time_sec * speed) % cell_size
+
+    # Vertical grid lines
+    for x in range(int(-offset), configs.SCREEN_WIDTH + cell_size, cell_size):
+        pygame.draw.line(surface, grid_color, (x, 0), (x, configs.SCREEN_HEIGHT), 1)
+
+    # Horizontal grid lines
+    for y in range(int(-offset), configs.SCREEN_HEIGHT + cell_size, cell_size):
+        pygame.draw.line(surface, grid_color, (0, y), (configs.SCREEN_WIDTH, y), 1)
+
 
 class LoadingScreenGame:
     def __init__(self):
@@ -30,7 +45,7 @@ class LoadingScreenGame:
         self.particles = []
         self.ripples = []
         self.shake = 0.0
-        self.wiggle_timer = 0.0  # Wiggle timer for the 6-7 finish
+        self.wiggle_timer = 0.0
         self.time = 0.0
         self.palette_idx = 0
         self.loops = 0
@@ -39,7 +54,6 @@ class LoadingScreenGame:
         self.shake = intensity
 
     def trigger_wiggle(self, duration=2.5):
-        """Triggers a slow, dramatic high-and-low screen wiggle."""
         self.wiggle_timer = duration
 
     def trigger_loop_warp(self):
@@ -61,7 +75,6 @@ class LoadingScreenGame:
 
         self.sfx.play(freq=350, duration=0.25, vol=0.3)
 
-        # Trigger special HIGH & LOW wiggle only at the end of the 6-7 loop!
         if was_six_seven:
             self.trigger_wiggle(2.5)
             self.trigger_shake(15.0)
@@ -104,9 +117,14 @@ class LoadingScreenGame:
                 if r.is_dead():
                     self.ripples.remove(r)
 
+            # 1. Fill base dark color
             render_surface = pygame.Surface((configs.SCREEN_WIDTH, configs.SCREEN_HEIGHT))
             render_surface.fill(configs.COLOR_BG)
 
+            # 2. Draw simple moving grid background
+            draw_moving_grid(render_surface, self.time, cell_size=42, speed=24.0)
+
+            # 3. Draw game elements on top
             for rip in self.ripples:
                 rip.draw(render_surface)
             for p in self.particles:
@@ -115,15 +133,15 @@ class LoadingScreenGame:
             self.ring.draw(render_surface, self.font_pct, active_palette, self.time)
             self.mission_manager.draw(render_surface, self.ring, self.time, active_palette)
 
-            # Draw Loops counter
+            # Loops counter
             loops_txt = self.font_loops.render(f"LOOPS: {self.loops}", True, configs.COLOR_TEXT_BRIGHT)
             render_surface.blit(loops_txt, loops_txt.get_rect(topright=(configs.SCREEN_WIDTH - 24, 24)))
 
-            # --- CALCULATE WIGGLE & SHAKE ---
+            # Screen Wiggle / Shake
             if self.wiggle_timer > 0:
                 progress = (2.5 - self.wiggle_timer)
                 fade = (self.wiggle_timer / 2.5)
-                wiggle_y = math.sin(progress * 7.0) * 32.0 * fade  # High and Low amplitude
+                wiggle_y = math.sin(progress * 7.0) * 32.0 * fade
                 wiggle_x = math.cos(progress * 3.5) * 10.0 * fade
                 self.wiggle_timer = max(0.0, self.wiggle_timer - dt)
             else:

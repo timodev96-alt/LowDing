@@ -7,10 +7,10 @@ import threading
 import urllib.request
 import pygame
 import configs
-import missions
+from missions_controller import BaseMission
 from particles import Particle
 
-class SequenceMission(missions.BaseMission):
+class SequenceMission(BaseMission):
     KEY_MAP = {
         pygame.K_UP: "UP",
         pygame.K_DOWN: "DOWN",

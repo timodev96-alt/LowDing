@@ -1,16 +1,10 @@
-import os
-import json
-import math
 import random
-import datetime
-import threading
-import urllib.request
 import pygame
 import configs
-import missions
+from missions_controller import BaseMission
 from particles import Particle
 
-class MathMission(missions.BaseMission):
+class MathMission(BaseMission):
     def __init__(self):
         self.font_math = pygame.font.SysFont("monospace", 28, bold=True)
         self.font_sub = pygame.font.SysFont("monospace", 15, bold=True)

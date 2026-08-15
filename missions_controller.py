@@ -1,21 +1,8 @@
-import os
-import json
 import math
 import random
-import datetime
-import threading
-import urllib.request
 import pygame
 import configs
 from particles import Particle
-
-from orb_mission import OrbMission
-from wordel_mission import WordleMission
-from sequance_mission import SequenceMission
-from six_seven_mission import SixSevenMission
-from Timo_slack_mission import TimoMission
-from plusing_mission import MathMission
-
 
 class BaseMission:
     def on_start(self):
@@ -29,6 +16,7 @@ class BaseMission:
 
     def draw(self, surface, ring, time_sec, active_palette):
         pass
+
 
 class SyncNode:
     def __init__(self, angle, is_green=True):
@@ -46,10 +34,24 @@ class SyncNode:
         pygame.draw.circle(surface, self.palette["main"], (px, py), 8)
         pygame.draw.circle(surface, self.palette["deep"], (px, py), 5)
 
+from orb_mission import OrbMission
+from wordel_mission import WordleMission
+from sequance_mission import SequenceMission
+from six_seven_mission import SixSevenMission
+from Timo_slack_mission import TimoMission
+from plusing_mission import MathMission
+from FlappySnake_mission import FlappySnakeMission
+
 class MissionManager:
     def __init__(self):
         self.missions = [
+            OrbMission(),
+            MathMission(),
+            SixSevenMission(),
+            TimoMission(),
             WordleMission(),
+            SequenceMission(),
+            FlappySnakeMission(),
         ]
         self.current_idx = 0
         self.current_mission.on_start()

@@ -7,10 +7,10 @@ import threading
 import urllib.request
 import pygame
 import configs
-import missions
+from missions_controller import BaseMission
 from particles import Particle
 
-class WordleMission(missions.BaseMission):
+class WordleMission(BaseMission):
     COLOR_GREEN = (40, 205, 130)    # Correct spot
     COLOR_YELLOW = (230, 185, 45)   # Wrong spot
     COLOR_GRAY = (55, 60, 75)       # Not in word

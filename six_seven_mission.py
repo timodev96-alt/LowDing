@@ -1,17 +1,11 @@
-import os
-import json
 import math
-import random
-import datetime
-import threading
-import urllib.request
 import pygame
 import configs
-import missions
+from missions_controller import BaseMission
 from particles import Particle
 
 
-class SixSevenMission(missions.BaseMission):
+class SixSevenMission(BaseMission):
     def __init__(self):
         self.font_big = pygame.font.SysFont("monospace", 32, bold=True)
         self.font_sub = pygame.font.SysFont("monospace", 15, bold=True)

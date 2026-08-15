@@ -1,16 +1,10 @@
 import os
-import json
-import math
-import random
-import datetime
-import threading
-import urllib.request
 import pygame
 import configs
-import missions
+from missions_controller import BaseMission
 from particles import Particle
 
-class TimoMission(missions.BaseMission):
+class TimoMission(BaseMission):
     CORRECT_ID = "U0B6FDN1542"
 
     def __init__(self):

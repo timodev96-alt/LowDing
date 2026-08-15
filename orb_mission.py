@@ -3,10 +3,10 @@ import pygame
 import random
 import configs
 from particles import Particle
+import missions_controller
+from missions_controller import BaseMission
 
-import missions
-
-class OrbMission(missions.BaseMission):
+class OrbMission(BaseMission):
     def __init__(self):
         self.nodes = []
         self.spawn_timer = 0.0
@@ -21,7 +21,7 @@ class OrbMission(missions.BaseMission):
             self.spawn_timer = 0.0
             if len(self.nodes) < 5:
                 is_green = random.random() < 0.70
-                self.nodes.append(missions.SyncNode(random.uniform(0, 360), is_green))
+                self.nodes.append(missions_controller.SyncNode(random.uniform(0, 360), is_green))
 
     def handle_event(self, event, ring, sfx, particles_list, trigger_shake):
         is_action = (event.type == pygame.KEYDOWN and event.key == pygame.K_SPACE) or \
