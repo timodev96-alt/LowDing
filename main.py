@@ -1,5 +1,7 @@
 import os
 import sys
+if hasattr(sys, '_MEIPASS'):
+    os.chdir(sys._MEIPASS)
 import math
 import random
 import pygame
@@ -10,8 +12,7 @@ import ring
 import SoundMaker
 from missions_controller import MissionManager
 
-# --- SIMPLE SCROLLING GRID BACKGROUND ---
-def draw_moving_grid(surface, time_sec, cell_size=40, speed=25.0):
+def draw_moving_grid(surface, time_sec, cell_size=45, speed=22.0):
     grid_color = (18, 22, 32)
     offset = (time_sec * speed) % cell_size
 
@@ -29,17 +30,17 @@ class LoadingScreenGame:
         self.screen = pygame.display.set_mode((configs.SCREEN_WIDTH, configs.SCREEN_HEIGHT))
         self.clock = pygame.time.Clock()
 
-        self.font_pct = pygame.font.SysFont("monospace", 38, bold=True)
-        self.font_loops = pygame.font.SysFont("monospace", 24, bold=True)
+        self.font_pct = pygame.font.SysFont("monospace", 44, bold=True)
+        self.font_loops = pygame.font.SysFont("monospace", 22, bold=True)
 
         self.sfx = SoundMaker.SoundFX()
-        self.play_bg_music()  # Start background music loop
+        self.play_bg_music()
 
         self.ring = ring.LoadingRing(
             configs.SCREEN_WIDTH // 2,
-            configs.SCREEN_HEIGHT // 2,
-            radius=120,
-            thickness=13
+            360,
+            radius=135,
+            thickness=14
         )
         self.mission_manager = MissionManager()
         self.particles = []
@@ -51,18 +52,15 @@ class LoadingScreenGame:
         self.loops = 0
 
     def play_bg_music(self):
-        """Loads and loops bg music infinitely."""
-        # Checks for bg.mp3, bg.ogg, bg.wav, or bg
         for filename in ["bg.mp3", "bg.ogg", "bg.wav", "bg"]:
             if os.path.exists(filename):
                 try:
                     pygame.mixer.music.load(filename)
-                    pygame.mixer.music.set_volume(0.35)  # Set volume (0.0 to 1.0)
-                    pygame.mixer.music.play(-1)          # -1 = infinite loop
-                    print(f"[AUDIO] Playing background music: {filename}")
+                    pygame.mixer.music.set_volume(0.35)
+                    pygame.mixer.music.play(-1)
                     break
-                except Exception as e:
-                    print(f"[AUDIO] Could not load {filename}: {e}")
+                except Exception:
+                    pass
 
     def trigger_shake(self, intensity=8.0):
         self.shake = intensity
@@ -72,7 +70,6 @@ class LoadingScreenGame:
 
     def trigger_loop_warp(self):
         was_six_seven = (self.mission_manager.current_idx == 3)
-
         self.loops += 1
 
         old_palette = configs.RING_PALETTES[self.palette_idx]
@@ -133,7 +130,7 @@ class LoadingScreenGame:
             render_surface = pygame.Surface((configs.SCREEN_WIDTH, configs.SCREEN_HEIGHT))
             render_surface.fill(configs.COLOR_BG)
 
-            draw_moving_grid(render_surface, self.time, cell_size=42, speed=24.0)
+            draw_moving_grid(render_surface, self.time, cell_size=45, speed=22.0)
 
             for rip in self.ripples:
                 rip.draw(render_surface)
@@ -144,12 +141,12 @@ class LoadingScreenGame:
             self.mission_manager.draw(render_surface, self.ring, self.time, active_palette)
 
             loops_txt = self.font_loops.render(f"LOOPS: {self.loops}", True, configs.COLOR_TEXT_BRIGHT)
-            render_surface.blit(loops_txt, loops_txt.get_rect(topright=(configs.SCREEN_WIDTH - 24, 24)))
+            render_surface.blit(loops_txt, loops_txt.get_rect(topright=(configs.SCREEN_WIDTH - 28, 26)))
 
             if self.wiggle_timer > 0:
                 progress = (2.5 - self.wiggle_timer)
                 fade = (self.wiggle_timer / 2.5)
-                wiggle_y = math.sin(progress * 7.0) * 32.0 * fade
+                wiggle_y = math.sin(progress * 7.0) * 30.0 * fade
                 wiggle_x = math.cos(progress * 3.5) * 10.0 * fade
                 self.wiggle_timer = max(0.0, self.wiggle_timer - dt)
             else:

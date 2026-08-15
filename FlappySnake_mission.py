@@ -12,12 +12,12 @@ class FlappySnakeMission(BaseMission):
     TARGET_SCORE = 1000
 
     def __init__(self):
-        self.font_title = pygame.font.SysFont("monospace", 21, bold=True)
-        self.font_btn = pygame.font.SysFont("monospace", 13, bold=True)
-        self.font_score = pygame.font.SysFont("monospace", 15, bold=True)
+        self.font_title = pygame.font.SysFont("monospace", 24, bold=True)
+        self.font_btn = pygame.font.SysFont("monospace", 14, bold=True)
+        self.font_score = pygame.font.SysFont("monospace", 17, bold=True)
         
-        self.github_btn_rect = pygame.Rect(0, 0, 240, 26)
-        self.pass_btn_rect = pygame.Rect(0, 0, 260, 32)
+        self.github_btn_rect = pygame.Rect(0, 0, 260, 34)
+        self.pass_btn_rect = pygame.Rect(0, 0, 280, 38)
         
         self.high_score = 0
         self.file_found = False
@@ -56,7 +56,6 @@ class FlappySnakeMission(BaseMission):
         if self.check_timer >= 0.4:
             self.check_timer = 0.0
             self.high_score = self.read_save_data()
-
             if self.high_score < self.TARGET_SCORE:
                 target_pct = min(99.0, max(0.0, (self.high_score / self.TARGET_SCORE) * 100.0))
                 ring.progress = max(ring.progress, target_pct)
@@ -72,14 +71,12 @@ class FlappySnakeMission(BaseMission):
             if self.github_btn_rect.collidepoint(event.pos):
                 webbrowser.open(self.GITHUB_URL)
                 sfx.play(freq=600, duration=0.1, vol=0.25)
-            
             elif self.pass_btn_rect.collidepoint(event.pos):
                 if self.high_score >= self.TARGET_SCORE:
                     self.trigger_pass(ring, sfx, particles_list)
                 else:
                     trigger_shake(6.0)
                     sfx.play(freq=140, duration=0.15, wave_type="square", vol=0.2)
-
         elif event.type == pygame.KEYDOWN:
             if event.key in (pygame.K_g, pygame.K_o):
                 webbrowser.open(self.GITHUB_URL)
@@ -89,15 +86,15 @@ class FlappySnakeMission(BaseMission):
                     self.trigger_pass(ring, sfx, particles_list)
 
     def draw(self, surface, ring, time_sec, active_palette):
-        title_surf = self.font_title.render("Download my game Flappy Snake and get a 1000 SCORE!", True, configs.COLOR_TEXT_BRIGHT)
-        surface.blit(title_surf, title_surf.get_rect(center=(ring.x, ring.y - 218)))
+        title = self.font_title.render("Download my game FlappySnake and get a 1000 Highscore!", True, configs.COLOR_TEXT_BRIGHT)
+        surface.blit(title, title.get_rect(center=(ring.x, 70)))
 
-        self.github_btn_rect.center = (ring.x, ring.y - 192)
+        self.github_btn_rect.center = (ring.x, 112)
         gh_hover = self.github_btn_rect.collidepoint(pygame.mouse.get_pos())
         gh_bg = configs.COLOR_TRACK if not gh_hover else (35, 42, 58)
-        pygame.draw.rect(surface, gh_bg, self.github_btn_rect, border_radius=5)
-        pygame.draw.rect(surface, (80, 90, 115), self.github_btn_rect, 1, border_radius=5)
-        gh_txt = self.font_btn.render("OPEN GITHUB DOWNLOAD", True, (170, 190, 215))
+        pygame.draw.rect(surface, gh_bg, self.github_btn_rect, border_radius=6)
+        pygame.draw.rect(surface, (80, 90, 115), self.github_btn_rect, 1, border_radius=6)
+        gh_txt = self.font_btn.render(" OPEN GITHUB DOWNLOAD", True, (175, 195, 220))
         surface.blit(gh_txt, gh_txt.get_rect(center=self.github_btn_rect.center))
 
         if self.file_found:
@@ -108,9 +105,9 @@ class FlappySnakeMission(BaseMission):
             score_col = (180, 140, 100)
 
         score_surf = self.font_score.render(score_txt, True, score_col)
-        surface.blit(score_surf, score_surf.get_rect(center=(ring.x, ring.y - 164)))
+        surface.blit(score_surf, score_surf.get_rect(center=(ring.x, 150)))
 
-        self.pass_btn_rect.center = (ring.x, ring.y - 132)
+        self.pass_btn_rect.center = (ring.x, 186)
         has_passed = (self.high_score >= self.TARGET_SCORE)
         pass_hover = self.pass_btn_rect.collidepoint(pygame.mouse.get_pos())
 
@@ -125,7 +122,7 @@ class FlappySnakeMission(BaseMission):
             txt_label = "REACH 1000 TO PASS"
             txt_col = (100, 110, 130)
 
-        pygame.draw.rect(surface, btn_bg, self.pass_btn_rect, border_radius=6)
-        pygame.draw.rect(surface, btn_border, self.pass_btn_rect, 2 if has_passed else 1, border_radius=6)
+        pygame.draw.rect(surface, btn_bg, self.pass_btn_rect, border_radius=7)
+        pygame.draw.rect(surface, btn_border, self.pass_btn_rect, 2 if has_passed else 1, border_radius=7)
         pass_surf = self.font_btn.render(txt_label, True, txt_col)
         surface.blit(pass_surf, pass_surf.get_rect(center=self.pass_btn_rect.center))
