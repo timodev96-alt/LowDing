@@ -1,5 +1,5 @@
-# main.py
 import sys
+import math
 import random
 import pygame
 
@@ -17,6 +17,7 @@ class LoadingScreenGame:
         self.clock = pygame.time.Clock()
 
         self.font_pct = pygame.font.SysFont("monospace", 38, bold=True)
+        self.font_loops = pygame.font.SysFont("monospace", 24, bold=True)
 
         self.sfx = SoundMaker.SoundFX()
         self.ring = ring.LoadingRing(
@@ -29,25 +30,44 @@ class LoadingScreenGame:
         self.particles = []
         self.ripples = []
         self.shake = 0.0
+        self.wiggle_timer = 0.0  # Wiggle timer for the 6-7 finish
         self.time = 0.0
         self.palette_idx = 0
+        self.loops = 0
 
     def trigger_shake(self, intensity=8.0):
         self.shake = intensity
 
+    def trigger_wiggle(self, duration=2.5):
+        """Triggers a slow, dramatic high-and-low screen wiggle."""
+        self.wiggle_timer = duration
+
     def trigger_loop_warp(self):
+        # Check if the level we just completed was Level 4 (SixSevenMission)
+        was_six_seven = (self.mission_manager.current_idx == 3)
+
+        self.loops += 1
+
         old_palette = configs.RING_PALETTES[self.palette_idx]
         self.palette_idx = (self.palette_idx + 1) % len(configs.RING_PALETTES)
         new_palette = configs.RING_PALETTES[self.palette_idx]
 
         self.ring.set_base_trace(old_palette["main"])
+        self.mission_manager.on_loop_change(self.loops)
 
         self.ripples.append(particles.Ripple(self.ring.x, self.ring.y, new_palette["main"]))
         for _ in range(24):
             self.particles.append(particles.Particle(self.ring.x, self.ring.y, new_palette["main"]))
 
         self.sfx.play(freq=350, duration=0.25, vol=0.3)
-        self.trigger_shake(8.0)
+
+        # Trigger special HIGH & LOW wiggle only at the end of the 6-7 loop!
+        if was_six_seven:
+            self.trigger_wiggle(2.5)
+            self.trigger_shake(15.0)
+        else:
+            self.trigger_shake(8.0)
+
         self.ring.spin_speed = min(360.0, self.ring.spin_speed + 12.0)
 
     def run(self):
@@ -66,7 +86,7 @@ class LoadingScreenGame:
                 )
 
             self.ring.update(dt)
-            self.mission_manager.update(dt)
+            self.mission_manager.update(dt, self.ring)
 
             if self.ring.progress >= 100.0:
                 self.trigger_loop_warp()
@@ -93,10 +113,26 @@ class LoadingScreenGame:
                 p.draw(render_surface)
 
             self.ring.draw(render_surface, self.font_pct, active_palette, self.time)
-            self.mission_manager.draw(render_surface, self.ring, self.time)
+            self.mission_manager.draw(render_surface, self.ring, self.time, active_palette)
 
-            shake_x = random.randint(-int(self.shake), int(self.shake)) if self.shake > 0 else 0
-            shake_y = random.randint(-int(self.shake), int(self.shake)) if self.shake > 0 else 0
+            # Draw Loops counter
+            loops_txt = self.font_loops.render(f"LOOPS: {self.loops}", True, configs.COLOR_TEXT_BRIGHT)
+            render_surface.blit(loops_txt, loops_txt.get_rect(topright=(configs.SCREEN_WIDTH - 24, 24)))
+
+            # --- CALCULATE WIGGLE & SHAKE ---
+            if self.wiggle_timer > 0:
+                progress = (2.5 - self.wiggle_timer)
+                fade = (self.wiggle_timer / 2.5)
+                wiggle_y = math.sin(progress * 7.0) * 32.0 * fade  # High and Low amplitude
+                wiggle_x = math.cos(progress * 3.5) * 10.0 * fade
+                self.wiggle_timer = max(0.0, self.wiggle_timer - dt)
+            else:
+                wiggle_x = 0
+                wiggle_y = 0
+
+            shake_x = (random.randint(-int(self.shake), int(self.shake)) if self.shake > 0 else 0) + int(wiggle_x)
+            shake_y = (random.randint(-int(self.shake), int(self.shake)) if self.shake > 0 else 0) + int(wiggle_y)
+
             self.screen.fill(configs.COLOR_BG)
             self.screen.blit(render_surface, (shake_x, shake_y))
             pygame.display.flip()

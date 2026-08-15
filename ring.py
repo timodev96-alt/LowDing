@@ -14,13 +14,11 @@ class LoadingRing:
         self.progress = 0.0
         self.scanner_angle = 0.0
         self.spin_speed = 180.0
-        self.base_color = configs.COLOR_TRACK  # Starts dark, becomes the previous cycle's color
-
+        self.base_color = configs.COLOR_TRACK
     def update(self, dt):
         self.scanner_angle = (self.scanner_angle + self.spin_speed * dt) % 360.0
 
     def set_base_trace(self, completed_color):
-        """Keeps the old trace as the base layer and resets progress to 0%."""
         self.base_color = completed_color
         self.progress = 0.0
 
@@ -28,14 +26,12 @@ class LoadingRing:
         pulse = math.sin(time_sec * 2.5) * 1.5
         current_r = self.base_radius + pulse
 
-        # 1. Base Track (Draws the previous cycle's full trace)
         for i in range(360):
             rad = math.radians(i)
             bx = self.x + math.cos(rad) * current_r
             by = self.y + math.sin(rad) * current_r
             pygame.draw.circle(surface, self.base_color, (int(bx), int(by)), self.cap_radius)
 
-        # 2. Active Progress Arc (Overwrites on top of the base track)
         if self.progress > 0:
             steps = int((self.progress / 100.0) * 360.0 * 2)
             for i in range(steps + 1):
@@ -44,13 +40,11 @@ class LoadingRing:
                 py = self.y + math.sin(rad) * current_r
                 pygame.draw.circle(surface, active_palette["main"], (int(px), int(py)), self.cap_radius)
 
-        # 3. Rotating Scanner Node
         scan_rad = math.radians(self.scanner_angle - 90.0)
         sx = self.x + math.cos(scan_rad) * current_r
         sy = self.y + math.sin(scan_rad) * current_r
         pygame.draw.circle(surface, active_palette["main"], (int(sx), int(sy)), self.cap_radius + 2)
         pygame.draw.circle(surface, active_palette["deep"], (int(sx), int(sy)), self.cap_radius - 2)
 
-        # 4. Percentage Display
         pct_txt = font_pct.render(f"{int(self.progress)}%", True, configs.COLOR_TEXT_BRIGHT)
         surface.blit(pct_txt, pct_txt.get_rect(center=(self.x, self.y)))
