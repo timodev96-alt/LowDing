@@ -4,47 +4,45 @@ import pygame
 import configs
 
 class LoadingRing:
-    def __init__(self, x, y, radius=120, thickness=13):
+    def __init__(self, x, y, radius=130, thickness=14):
         self.x = x
         self.y = y
-        self.base_radius = radius
+        self.radius = radius
         self.thickness = thickness
-        self.cap_radius = thickness // 2
-        
         self.progress = 0.0
+        self.display_progress = 0.0
         self.scanner_angle = 0.0
         self.spin_speed = 180.0
-        self.base_color = configs.COLOR_TRACK
+        self.scale = 1.0
+
+    def add_progress(self, amount):
+        self.progress = min(100.0, max(0.0, self.progress + amount))
+        if amount > 0:
+            self.scale = 1.08
+        else:
+            self.scale = 0.94
+
     def update(self, dt):
         self.scanner_angle = (self.scanner_angle + self.spin_speed * dt) % 360.0
+        self.display_progress += (self.progress - self.display_progress) * min(1.0, dt*12.0)
+        self.scale += (1.0 - self.scale) * min(1.0, dt * 10.0)
 
-    def set_base_trace(self, completed_color):
-        self.base_color = completed_color
-        self.progress = 0.0
+    def draw(self,surface, font, palette, time_sec):
+        r=int(self.radius * self.scale)
+        rect = pygame.Rect(self.x - r, self.y - r, r*2, r*2)
+        pygame.draw.circle(surface, (24,28,38),(self.x,self.y), r,self.thickness)
 
-    def draw(self, surface, font_pct, active_palette, time_sec):
-        pulse = math.sin(time_sec * 2.5) * 1.5
-        current_r = self.base_radius + pulse
+        if self.display_progress>0:
+            angle_span = (self.display_progress/100.0) * 360
+            start_rad = math.radians(-90)
+            end_rad = math.radians(-90 + angle_span)
+            pygame.draw.arc(surface, palette["main"], rect, -end_rad, -start_rad, self.thickness)
 
-        for i in range(360):
-            rad = math.radians(i)
-            bx = self.x + math.cos(rad) * current_r
-            by = self.y + math.sin(rad) * current_r
-            pygame.draw.circle(surface, self.base_color, (int(bx), int(by)), self.cap_radius)
+            
+        tip_rad = math.radians(self.scanner_angle - 90)
+        tx = int(self.x + math.cos(tip_rad)*r) # yay mathh :D
+        ty = int(self.x + math.sin(tip_rad)*r)
+        pygame.draw.circle(surface, palette["main"], (tx,ty), self.thickness // 2+2)
 
-        if self.progress > 0:
-            steps = int((self.progress / 100.0) * 360.0 * 2)
-            for i in range(steps + 1):
-                rad = math.radians((i * 0.5) - 90.0)
-                px = self.x + math.cos(rad) * current_r
-                py = self.y + math.sin(rad) * current_r
-                pygame.draw.circle(surface, active_palette["main"], (int(px), int(py)), self.cap_radius)
-
-        scan_rad = math.radians(self.scanner_angle - 90.0)
-        sx = self.x + math.cos(scan_rad) * current_r
-        sy = self.y + math.sin(scan_rad) * current_r
-        pygame.draw.circle(surface, active_palette["main"], (int(sx), int(sy)), self.cap_radius + 2)
-        pygame.draw.circle(surface, active_palette["deep"], (int(sx), int(sy)), self.cap_radius - 2)
-
-        pct_txt = font_pct.render(f"{int(self.progress)}%", True, configs.COLOR_TEXT_BRIGHT)
-        surface.blit(pct_txt, pct_txt.get_rect(center=(self.x, self.y)))
+        txt = font.render(f"{int(self.display_progress)}%", True, (255,255,255))
+        surface.blit(txt, txt.get_rect(center=(self.x, self.y)))
