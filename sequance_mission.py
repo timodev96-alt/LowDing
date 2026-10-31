@@ -15,9 +15,9 @@ class SequenceMission(BaseMission):
     DIRECTIONS = ["UP", "DOWN", "LEFT", "RIGHT"]
 
     def __init__(self):
-        self.font_title = pygame.font.SysFont("monospace", 24, bold=True)
-        self.font_sub = pygame.font.SysFont("monospace", 15, bold=False)
-        self.font_key = pygame.font.SysFont("monospace", 17, bold=True)
+        self.font_title = configs.get_font(20,bold=True)
+        self.font_sub   = configs.get_font(13,bold=False)
+        self.font_key   = configs.get_mono_font(15,bold=True)
         self.sequence = []
         self.step = 0
 

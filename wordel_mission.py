@@ -14,9 +14,9 @@ class WordleMission(BaseMission):
     COLOR_GRAY = (55, 60, 75)
 
     def __init__(self):
-        self.font_title = pygame.font.SysFont("monospace", 24, bold=True)
-        self.font_hint = pygame.font.SysFont("monospace", 14, bold=False)
-        self.font_tile = pygame.font.SysFont("monospace", 22, bold=True)
+        self.font_title = configs.get_font(20,bold=True)
+        self.font_hint = configs.get_font(13,bold=False)
+        self.font_tile = configs.get_mono_font(20,bold=True)
         self.today_word = "CRANE"
         self.user_input = ""
         self.guesses = []

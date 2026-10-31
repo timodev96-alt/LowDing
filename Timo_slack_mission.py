@@ -9,9 +9,9 @@ class TimoMission(BaseMission):
     CORRECT_ID = "U0B6FDN1542"
 
     def __init__(self):
-        self.font_title = pygame.font.SysFont("monospace", 24, bold=True)
-        self.font_hint = pygame.font.SysFont("monospace", 15, bold=False)
-        self.font_input = pygame.font.SysFont("monospace", 22, bold=True)
+        self.font_title = configs.get_font(20,bold=True)
+        self.font_hint = configs.get_font(13,bold=False)
+        self.font_input = configs.get_mono_font(19,bold=True)
         self.user_input = ""
         self.avatar = None
         self.load_image()

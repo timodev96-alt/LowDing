@@ -7,9 +7,9 @@ from missions_controller import BaseMission
 
 class SixSevenMission(BaseMission):
     def __init__(self):
-        self.font_title = pygame.font.SysFont("monospace", 24, bold=True)
-        self.font_sub = pygame.font.SysFont("monospace", 15, bold=False)
-        self.font_card = pygame.font.SysFont("monospace", 22, bold=True)  # Scaled to fit cleanly inside boxes
+        self.font_title =configs.get_font(20, bold=True)
+        self.font_sub =configs.get_font(13, bold=False)
+        self.font_card =configs.get_mono_font(18, bold=True)
         self.state = 0
 
     def on_start(self):
@@ -46,7 +46,7 @@ class SixSevenMission(BaseMission):
     def draw(self, surface, ring, time_sec, active_palette):
         sway = math.sin(time_sec * 3.5) * 3.5
 
-        title = self.font_title.render("RESONANCE CHANT", True, configs.COLOR_TEXT)
+        title = self.font_title.render("67676767676767", True, configs.COLOR_TEXT)
         surface.blit(title, title.get_rect(center=(ring.x, 75)))
 
         sub = self.font_sub.render("PRESS 6 THEN 7 TO BUILD CHARGE", True, (135, 150, 175))

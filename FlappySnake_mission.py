@@ -12,9 +12,9 @@ class FlappySnakeMission(BaseMission):
     TARGET_SCORE = 1000
 
     def __init__(self):
-        self.font_title = pygame.font.SysFont("monospace", 24, bold=True)
-        self.font_btn = pygame.font.SysFont("monospace", 14, bold=True)
-        self.font_score = pygame.font.SysFont("monospace", 17, bold=True)
+        self.font_title = configs.get_font(18,bold=True)
+        self.font_btn = configs.get_font(13,bold=True)
+        self.font_score = configs.get_mono_font(15,bold=True)
         
         self.github_btn_rect = pygame.Rect(0, 0, 260, 34)
         self.pass_btn_rect = pygame.Rect(0, 0, 280, 38)

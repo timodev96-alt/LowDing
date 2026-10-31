@@ -25,8 +25,8 @@ class SyncNode:
 
 class OrbMission(BaseMission):
     def __init__(self):
-        self.font_title = pygame.font.SysFont("monospace", 24, bold=True)
-        self.font_sub = pygame.font.SysFont("monospace", 15, bold=False)
+        self.font_title = configs.get_font(20, bold=True)
+        self.font_sub =configs.get_font(13, bold=False)
         self.nodes = []
         self.spawn_timer = 0.0
 
@@ -59,7 +59,7 @@ class OrbMission(BaseMission):
             node = self.nodes.pop(hit_idx)
             nx, ny = node.get_pos(ring.x, ring.y, ring.base_radius)
             if node.is_green:
-                ring.progress = min(100.0, ring.progress + node.value)
+                ring.add_progress(node.value)
                 sfx.play(freq=580, duration=0.12, vol=0.25)
                 for _ in range(14):
                     particles_list.append(Particle(nx, ny, configs.ORB_GREEN["main"]))
@@ -73,7 +73,7 @@ class OrbMission(BaseMission):
             sfx.play(freq=240, duration=0.05, vol=0.10)
 
     def draw(self, surface, ring, time_sec, active_palette):
-        title = self.font_title.render("TIMING SYNCHRONIZER", True, configs.COLOR_TEXT)
+        title = self.font_title.render("TIMING", True, configs.COLOR_TEXT)
         surface.blit(title, title.get_rect(center=(ring.x, 80)))
 
         sub = self.font_sub.render("PRESS SPACE OR CLICK ON GREEN ORBS", True, (135, 150, 175))

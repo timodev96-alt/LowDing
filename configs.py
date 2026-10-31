@@ -1,5 +1,6 @@
 # configs.py
 import pygame
+pygame.font.init()
 SCREEN_WIDTH = 900
 SCREEN_HEIGHT = 650
 FPS = 60
@@ -24,10 +25,7 @@ RING_PALETTES = [
     {"main": (45, 212, 191), "deep": (15, 118, 110)},
 ]
 
-def get_font(size,bold=False):
-    for font_name in ["segoeui", "inter", "sfprodisplay", "helveticaneue", "arial", "dejavusans"]:
-        try:
-            return pygame.font.SysFont(font_name,size,bold=bold)
-        except Exception:
-            pass
-    return pygame.font.Font(None,size)
+def get_font(size, bold=False):
+    return pygame.font.SysFont("bahnschrift,segoeuivariable,segoeui,arial", size, bold=bold)
+def get_mono_font(size, bold=False):
+    return pygame.font.SysFont("cascadiacode,consolas,lucidaconsole", size, bold=bold)

@@ -118,13 +118,7 @@ class LoadingScreenGame:
         self.ring.spin_speed = min(360.0, self.ring.spin_speed + 12.0)
 
     def draw_header_bar(self, surface, active_palette):
-
-        pill_w, pill_h = 110, 30
-        pill_x = configs.SCREEN_WIDTH - pill_w - 24
-        pill_y = 15
-        pill_rect = pygame.Rect(pill_x, pill_y, pill_w, pill_h)
-
-        pygame.draw.circle(surface, active_palette["main"], (pill_x + 16, pill_y + pill_h // 2), 4)
+        pass
 
     def run(self):
         while True:
