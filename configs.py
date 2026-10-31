@@ -1,19 +1,33 @@
 # configs.py
+import pygame
 SCREEN_WIDTH = 900
 SCREEN_HEIGHT = 650
 FPS = 60
 
-COLOR_BG = (12, 14, 20)
-COLOR_TRACK = (24, 28, 38)
+COLOR_BG = (10, 12, 16)
+COLOR_SURFACE = (18,22,30)
+COLOR_TRACK = (28,34,46)
+COLOR_BORDER = (42,50,68)
 
-ORB_GREEN = {"main": (40, 205, 130), "deep": (18, 110, 65)}
-ORB_RED   = {"main": (230, 60, 60),  "deep": (130, 20, 20)}
+COLOR_TEXT = (240,244,250)
+COLOR_TXT_MUTED = (120,135,160)
+COLOR_TXT_DIM = (70,80,100)
+
+ORB_GREEN = {"main":(52,211,153),"deep":(16,110,75),"glow": (52,211,153,40)}
+ORB_RED   = {"main": (248, 113, 113),  "deep": (130, 30,30), "glow": (248,113,113,40)}
 
 RING_PALETTES = [
-    {"main": (45, 170, 220), "deep": (20, 95, 130)},   # Cyan
-    {"main": (170, 110, 230), "deep": (95, 90, 240)},  # Purple
-    {"main": (230, 160, 45), "deep": (140, 90, 20)},   # Amber
-    {"main": (225, 90, 125), "deep": (135, 40, 65)},   # Rose
+    {"main": (56, 189, 248), "deep": (14, 116, 144)},
+    {"main": (168, 85, 247), "deep": (107, 33, 168)},
+    {"main": (251, 191, 36), "deep": (180, 83, 9)},
+    {"main": (244, 63, 94),  "deep": (159, 18, 57)},
+    {"main": (45, 212, 191), "deep": (15, 118, 110)},
 ]
 
-COLOR_TEXT_BRIGHT = (230, 238, 248)
+def get_font(size,bold=False):
+    for font_name in ["segoeui", "inter", "sfprodisplay", "helveticaneue", "arial", "dejavusans"]:
+        try:
+            return pygame.font.SysFont(font_name,size,bold=bold)
+        except Exception:
+            pass
+    return pygame.font.Font(None,size)

@@ -61,7 +61,7 @@ class MathMission(BaseMission):
             self.user_input += event.unicode
 
     def draw(self, surface, ring, time_sec, active_palette):
-        title = self.font_title.render("SYSTEM CALCULATION", True, configs.COLOR_TEXT_BRIGHT)
+        title = self.font_title.render("SYSTEM CALCULATION", True, configs.COLOR_TEXT)
         surface.blit(title, title.get_rect(center=(ring.x, 75)))
 
         prob = self.font_math.render(self.math_problem, True, active_palette["main"])
@@ -72,5 +72,5 @@ class MathMission(BaseMission):
         pygame.draw.rect(surface, active_palette["main"], input_box, 2, border_radius=8)
 
         txt = self.user_input if self.user_input else "_"
-        inp = self.font_input.render(txt, True, configs.COLOR_TEXT_BRIGHT)
+        inp = self.font_input.render(txt, True, configs.COLOR_TEXT)
         surface.blit(inp, inp.get_rect(center=input_box.center))

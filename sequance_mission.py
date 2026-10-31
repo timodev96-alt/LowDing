@@ -51,7 +51,7 @@ class SequenceMission(BaseMission):
                 particles_list.append(Particle(ring.x, 165, configs.ORB_RED["main"]))
 
     def draw(self, surface, ring, time_sec, active_palette):
-        title = self.font_title.render("SECURITY OVERRIDE", True, configs.COLOR_TEXT_BRIGHT)
+        title = self.font_title.render("SECURITY OVERRIDE", True, configs.COLOR_TEXT)
         surface.blit(title, title.get_rect(center=(ring.x, 75)))
 
         sub = self.font_sub.render("PRESS ARROW KEYS IN SEQUENCE", True, (135, 150, 175))
@@ -73,7 +73,7 @@ class SequenceMission(BaseMission):
             elif i == self.step:
                 bg_col = configs.COLOR_TRACK
                 border_col = active_palette["main"]
-                txt_col = configs.COLOR_TEXT_BRIGHT
+                txt_col = configs.COLOR_TEXT
             else:
                 bg_col = configs.COLOR_TRACK
                 border_col = (50, 55, 70)

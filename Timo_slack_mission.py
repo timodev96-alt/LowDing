@@ -60,7 +60,7 @@ class TimoMission(BaseMission):
             avatar_rect = self.avatar.get_rect(center=(ring.x, ring.y))
             surface.blit(self.avatar, avatar_rect)
 
-        q_surf = self.font_title.render("What is Timo's slack id?", True, configs.COLOR_TEXT_BRIGHT)
+        q_surf = self.font_title.render("What is Timo's slack id?", True, configs.COLOR_TEXT)
         surface.blit(q_surf, q_surf.get_rect(center=(ring.x, 75)))
 
         h_surf = self.font_hint.render("hint: Go to #what_is_my_slack_id and mention me (@Timo)", True, (140, 160, 185))
@@ -71,6 +71,6 @@ class TimoMission(BaseMission):
         pygame.draw.rect(surface, active_palette["main"], input_box, 2, border_radius=8)
 
         txt = self.user_input if self.user_input else "ENTER ID..."
-        txt_col = configs.COLOR_TEXT_BRIGHT if self.user_input else (100, 110, 130)
+        txt_col = configs.COLOR_TEXT if self.user_input else (100, 110, 130)
         inp_surf = self.font_input.render(txt, True, txt_col)
         surface.blit(inp_surf, inp_surf.get_rect(center=input_box.center))

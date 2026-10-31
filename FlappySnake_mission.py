@@ -86,7 +86,7 @@ class FlappySnakeMission(BaseMission):
                     self.trigger_pass(ring, sfx, particles_list)
 
     def draw(self, surface, ring, time_sec, active_palette):
-        title = self.font_title.render("Download my game FlappySnake and get a 1000 Highscore!", True, configs.COLOR_TEXT_BRIGHT)
+        title = self.font_title.render("Download my game FlappySnake and get a 1000 Highscore!", True, configs.COLOR_TEXT)
         surface.blit(title, title.get_rect(center=(ring.x, 70)))
 
         self.github_btn_rect.center = (ring.x, 112)
@@ -99,7 +99,7 @@ class FlappySnakeMission(BaseMission):
 
         if self.file_found:
             score_txt = f"HIGH SCORE: {self.high_score} / {self.TARGET_SCORE}"
-            score_col = configs.ORB_GREEN["main"] if self.high_score >= self.TARGET_SCORE else configs.COLOR_TEXT_BRIGHT
+            score_col = configs.ORB_GREEN["main"] if self.high_score >= self.TARGET_SCORE else configs.COLOR_TEXT
         else:
             score_txt = "WAITING FOR FLAPPY SNAKE SAVE DATA..."
             score_col = (180, 140, 100)

@@ -90,7 +90,7 @@ class WordleMission(BaseMission):
             self.user_input += event.unicode.upper()
 
     def draw(self, surface, ring, time_sec, active_palette):
-        title = self.font_title.render("GLOBAL WORDLE OF THE DAY", True, configs.COLOR_TEXT_BRIGHT)
+        title = self.font_title.render("GLOBAL WORDLE OF THE DAY", True, configs.COLOR_TEXT)
         surface.blit(title, title.get_rect(center=(ring.x, 70)))
 
         hint = self.font_hint.render("Enter today's real NYT Wordle answer!", True, (135, 150, 175))
@@ -118,5 +118,5 @@ class WordleMission(BaseMission):
             pygame.draw.rect(surface, border_col, tile_rect, 2 if is_active else 1, border_radius=6)
 
             if i < len(self.user_input):
-                letter_s = self.font_tile.render(self.user_input[i], True, configs.COLOR_TEXT_BRIGHT)
+                letter_s = self.font_tile.render(self.user_input[i], True, configs.COLOR_TEXT)
                 surface.blit(letter_s, letter_s.get_rect(center=tile_rect.center))

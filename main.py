@@ -12,15 +12,14 @@ import ring
 import SoundMaker
 from missions_controller import MissionManager
 
-def draw_moving_grid(surface, time_sec, cell_size=45, speed=22.0):
-    grid_color = (18, 22, 32)
-    offset = (time_sec * speed) % cell_size
 
-    for x in range(int(-offset), configs.SCREEN_WIDTH + cell_size, cell_size):
-        pygame.draw.line(surface, grid_color, (x, 0), (x, configs.SCREEN_HEIGHT), 1)
-
-    for y in range(int(-offset), configs.SCREEN_HEIGHT + cell_size, cell_size):
-        pygame.draw.line(surface, grid_color, (0, y), (configs.SCREEN_WIDTH, y), 1)
+def get_ui_font(size, bold=False):
+    for font_name in ["segoeui", "inter", "sfprodisplay", "helveticaneue", "arial", "dejavusans"]:
+        try:
+            return pygame.font.SysFont(font_name, size, bold=bold)
+        except Exception:
+            pass
+    return pygame.font.Font(None, size)
 
 
 class LoadingScreenGame:
@@ -30,8 +29,9 @@ class LoadingScreenGame:
         self.screen = pygame.display.set_mode((configs.SCREEN_WIDTH, configs.SCREEN_HEIGHT))
         self.clock = pygame.time.Clock()
 
-        self.font_pct = pygame.font.SysFont("monospace", 44, bold=True)
-        self.font_loops = pygame.font.SysFont("monospace", 22, bold=True)
+        self.font_pct = get_ui_font(44, bold=True)
+        self.font_badge = get_ui_font(13, bold=True)
+        self.font_title = get_ui_font(14, bold=True)
 
         self.sfx = SoundMaker.SoundFX()
         self.play_bg_music()
@@ -50,6 +50,30 @@ class LoadingScreenGame:
         self.time = 0.0
         self.palette_idx = 0
         self.loops = 0
+
+        self.bg_cache = self._create_bg_surface()
+
+    def _create_bg_surface(self):
+        bg = pygame.Surface((configs.SCREEN_WIDTH, configs.SCREEN_HEIGHT))
+        bg_col = getattr(configs, "COLOR_BG", (12, 14, 20))
+        bg.fill(bg_col)
+
+        spacing = 30
+        dot_color = (24, 29, 42)
+        for x in range(spacing // 2, configs.SCREEN_WIDTH, spacing):
+            for y in range(spacing // 2, configs.SCREEN_HEIGHT, spacing):
+                bg.set_at((x, y), dot_color)
+
+        vignette = pygame.Surface((configs.SCREEN_WIDTH, configs.SCREEN_HEIGHT), pygame.SRCALPHA)
+        cx, cy = configs.SCREEN_WIDTH // 2, configs.SCREEN_HEIGHT // 2
+        max_dist = math.hypot(cx, cy)
+        
+        for r in range(int(max_dist * 0.4), int(max_dist), 24):
+            alpha = int(90 * ((r - max_dist * 0.4) / (max_dist * 0.6)))
+            pygame.draw.circle(vignette, (5, 7, 10, min(140, alpha)), (cx, cy), r, 24)
+        
+        bg.blit(vignette, (0, 0))
+        return bg
 
     def play_bg_music(self):
         for filename in ["bg.mp3", "bg.ogg", "bg.wav", "bg"]:
@@ -93,6 +117,15 @@ class LoadingScreenGame:
 
         self.ring.spin_speed = min(360.0, self.ring.spin_speed + 12.0)
 
+    def draw_header_bar(self, surface, active_palette):
+
+        pill_w, pill_h = 110, 30
+        pill_x = configs.SCREEN_WIDTH - pill_w - 24
+        pill_y = 15
+        pill_rect = pygame.Rect(pill_x, pill_y, pill_w, pill_h)
+
+        pygame.draw.circle(surface, active_palette["main"], (pill_x + 16, pill_y + pill_h // 2), 4)
+
     def run(self):
         while True:
             dt = self.clock.tick(configs.FPS) / 1000.0
@@ -128,37 +161,39 @@ class LoadingScreenGame:
                     self.ripples.remove(r)
 
             render_surface = pygame.Surface((configs.SCREEN_WIDTH, configs.SCREEN_HEIGHT))
-            render_surface.fill(configs.COLOR_BG)
-
-            draw_moving_grid(render_surface, self.time, cell_size=45, speed=22.0)
+            render_surface.blit(self.bg_cache, (0, 0))
 
             for rip in self.ripples:
                 rip.draw(render_surface)
             for p in self.particles:
                 p.draw(render_surface)
 
-            self.ring.draw(render_surface, self.font_pct, active_palette, self.time)
+            try:
+                self.ring.draw(render_surface, self.font_pct, active_palette, self.time)
+            except TypeError:
+                self.ring.draw(render_surface, active_palette, self.time)
+
             self.mission_manager.draw(render_surface, self.ring, self.time, active_palette)
 
-            loops_txt = self.font_loops.render(f"LOOPS: {self.loops}", True, configs.COLOR_TEXT_BRIGHT)
-            render_surface.blit(loops_txt, loops_txt.get_rect(topright=(configs.SCREEN_WIDTH - 28, 26)))
+            self.draw_header_bar(render_surface, active_palette)
 
             if self.wiggle_timer > 0:
                 progress = (2.5 - self.wiggle_timer)
                 fade = (self.wiggle_timer / 2.5)
-                wiggle_y = math.sin(progress * 7.0) * 30.0 * fade
-                wiggle_x = math.cos(progress * 3.5) * 10.0 * fade
+                wiggle_y = math.sin(progress * 7.0) * 22.0 * fade
+                wiggle_x = math.cos(progress * 3.5) * 8.0 * fade
                 self.wiggle_timer = max(0.0, self.wiggle_timer - dt)
             else:
                 wiggle_x = 0
                 wiggle_y = 0
 
-            shake_x = (random.randint(-int(self.shake), int(self.shake)) if self.shake > 0 else 0) + int(wiggle_x)
-            shake_y = (random.randint(-int(self.shake), int(self.shake)) if self.shake > 0 else 0) + int(wiggle_y)
+            shake_x = (random.uniform(-self.shake, self.shake) if self.shake > 0 else 0) + wiggle_x
+            shake_y = (random.uniform(-self.shake, self.shake) if self.shake > 0 else 0) + wiggle_y
 
-            self.screen.fill(configs.COLOR_BG)
-            self.screen.blit(render_surface, (shake_x, shake_y))
+            self.screen.fill(getattr(configs, "COLOR_BG", (12, 14, 20)))
+            self.screen.blit(render_surface, (int(shake_x), int(shake_y)))
             pygame.display.flip()
+
 
 if __name__ == "__main__":
     game = LoadingScreenGame()

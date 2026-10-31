@@ -73,7 +73,7 @@ class OrbMission(BaseMission):
             sfx.play(freq=240, duration=0.05, vol=0.10)
 
     def draw(self, surface, ring, time_sec, active_palette):
-        title = self.font_title.render("TIMING SYNCHRONIZER", True, configs.COLOR_TEXT_BRIGHT)
+        title = self.font_title.render("TIMING SYNCHRONIZER", True, configs.COLOR_TEXT)
         surface.blit(title, title.get_rect(center=(ring.x, 80)))
 
         sub = self.font_sub.render("PRESS SPACE OR CLICK ON GREEN ORBS", True, (135, 150, 175))

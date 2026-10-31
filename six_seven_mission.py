@@ -46,7 +46,7 @@ class SixSevenMission(BaseMission):
     def draw(self, surface, ring, time_sec, active_palette):
         sway = math.sin(time_sec * 3.5) * 3.5
 
-        title = self.font_title.render("RESONANCE CHANT", True, configs.COLOR_TEXT_BRIGHT)
+        title = self.font_title.render("RESONANCE CHANT", True, configs.COLOR_TEXT)
         surface.blit(title, title.get_rect(center=(ring.x, 75)))
 
         sub = self.font_sub.render("PRESS 6 THEN 7 TO BUILD CHARGE", True, (135, 150, 175))
@@ -59,7 +59,7 @@ class SixSevenMission(BaseMission):
         b_col_6 = configs.ORB_GREEN["main"] if self.state == 1 else active_palette["main"]
         pygame.draw.rect(surface, col_6, card_6_rect, border_radius=8)
         pygame.draw.rect(surface, b_col_6, card_6_rect, 2, border_radius=8)
-        txt_6 = self.font_card.render("SIX [6]", True, configs.COLOR_TEXT_BRIGHT)
+        txt_6 = self.font_card.render("SIX [6]", True, configs.COLOR_TEXT)
         surface.blit(txt_6, txt_6.get_rect(center=card_6_rect.center))
 
         card_7_rect = pygame.Rect(ring.x + 20, int(150 - sway), card_w, card_h)
@@ -67,5 +67,5 @@ class SixSevenMission(BaseMission):
         b_col_7 = active_palette["main"] if self.state == 1 else (55, 60, 75)
         pygame.draw.rect(surface, col_7, card_7_rect, border_radius=8)
         pygame.draw.rect(surface, b_col_7, card_7_rect, 2 if self.state == 1 else 1, border_radius=8)
-        txt_7 = self.font_card.render("SEVEN [7]", True, configs.COLOR_TEXT_BRIGHT if self.state == 1 else (95, 105, 125))
+        txt_7 = self.font_card.render("SEVEN [7]", True, configs.COLOR_TEXT if self.state == 1 else (95, 105, 125))
         surface.blit(txt_7, txt_7.get_rect(center=card_7_rect.center))
