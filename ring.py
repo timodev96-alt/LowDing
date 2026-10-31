@@ -48,13 +48,6 @@ class LoadingRing:
             end_rad = math.radians(90.0)
             pygame.draw.arc(surface,active_palette["main"], rect, start_rad,end_rad,self.thickness)
 
-            pygame.draw.circle(surface,active_palette["main"],(self.x,self.y - r), self.cap_radius)
-
-            tip_rad = math.radians(pct_deg - 90.0)
-            tip_x = self.x + math.cos(tip_rad) * r
-            tip_y = self.y + math.sin(tip_rad) * r
-            pygame.draw.circle(surface, active_palette["main"], (int(tip_x), int(tip_y)), self.cap_radius)
-
         scan_rad = math.radians(self.scanner_angle - 90.0)
         sx = int(self.x + math.cos(scan_rad)* r)
         sy = int(self.y + math.sin(scan_rad)* r)

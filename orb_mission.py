@@ -12,15 +12,32 @@ class SyncNode:
         self.is_green = is_green
         self.palette = configs.ORB_GREEN if is_green else configs.ORB_RED
         self.value = random.randint(19, 23)
+        self.pulse_phase = random.uniform(0,6.28)
 
     def get_pos(self, cx, cy, radius):
         rad = math.radians(self.angle - 90.0)
         return int(cx + math.cos(rad) * radius), int(cy + math.sin(rad) * radius)
 
-    def draw(self, surface, cx, cy, radius):
+    def draw(self, surface, cx, cy, radius, scanner_angle, time_sec):
         px, py = self.get_pos(cx, cy, radius)
-        pygame.draw.circle(surface, self.palette["main"], (px, py), 9)
-        pygame.draw.circle(surface, self.palette["deep"], (px, py), 5)
+
+        diff = abs(self.angle - scanner_angle)
+        in_hit_zone = min(diff, 360.0 - diff) <= 22.0
+
+        pulse = math.sin(time_sec * 5.0 + self.pulse_phase) * 1.5
+        base_size = 9 + (3 if in_hit_zone else 0)
+
+        aura_r = int(base_size + 6 + pulse)
+        aura_surf = pygame.Surface((aura_r*2, aura_r*2), pygame.SRCALPHA)
+        alpha = 70 if in_hit_zone else 30
+        pygame.draw.circle(aura_surf, (*self.palette["main"],alpha), (aura_r,aura_r), aura_r)
+        surface.blit(aura_surf, (px-aura_r,py - aura_r))
+
+        pygame.draw.circle(surface, self.palette["main"], (px,py), int(base_size + pulse * 0.5))
+        pygame.draw.circle(surface, self.palette["main"], (px,py), 5)
+
+        core_col = (255,255,255) if in_hit_zone else self.palette["main"]
+        pygame.draw.circle(surface, core_col, (px,py),2)
 
 
 class OrbMission(BaseMission):
@@ -82,4 +99,4 @@ class OrbMission(BaseMission):
         pulse = math.sin(time_sec * 2.5) * 1.5
         current_r = ring.base_radius + pulse
         for node in self.nodes:
-            node.draw(surface, ring.x, ring.y, current_r)
+            node.draw(surface, ring.x,ring.y,current_r,ring.scanner_angle,time_sec)

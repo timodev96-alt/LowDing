@@ -8,14 +8,18 @@ class Particle:
         self.x, self.y = x, y
         self.color = color
         angle = random.uniform(0, math.pi * 2)
-        speed = random.uniform(1.8, 5.0)
+        speed = random.uniform(3.0, 7.5)
         self.vx = math.cos(angle) * speed
         self.vy = math.sin(angle) * speed
         self.life = 1.0
-        self.decay = random.uniform(1.8, 3.0)
+        self.decay = random.uniform(1.6, 2.8)
         self.size = random.uniform(2.5, 5.0)
 
     def update(self, dt):
+        drag = 0.91 ** (dt*60.0)
+        self.vx *= drag
+        self.vy *= drag
+
         self.x += self.vx * 60 * dt
         self.y += self.vy * 60 * dt
         self.life -= self.decay * dt
@@ -24,7 +28,6 @@ class Particle:
         if self.life > 0:
             s = max(1, int(self.size * self.life))
             pygame.draw.circle(surface, self.color, (int(self.x), int(self.y)), s)
-
 
 class Ripple:
     def __init__(self, x, y, color):
